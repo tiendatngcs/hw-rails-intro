@@ -6,9 +6,9 @@
 <table class="table table-striped col-md-12" id="movies">
   <thead>
     <tr>
-      <th>Movie Title</th>
+      <th class=<%= @css_title %> <%= @css_title_hilite %>><a href=<%= movies_path(:sort => "title") %> id="title_header">Movie Title</a></th>
       <th>Rating</th>
-      <th>Release Date</th>
+      <th class=<%= @css_release_date %> <%= @css_release_date_hilite  %>><a href=<%= movies_path(:sort => "release_date") %> id="release_date_header">Release Date</a></th>
       <th>More Info</th>
     </tr>
   </thead>

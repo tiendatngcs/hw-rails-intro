@@ -7,7 +7,27 @@ class MoviesController < ApplicationController
     end
   
     def index
-      @movies = Movie.all
+      Movie.order("title")
+      if params[:sort]
+        if params[:sort] == "title"
+          @css_title = "bg-warning"
+          @css_title_hilite = "hilite"
+          @css_release_date = ""
+          @css_release_date_hilite = ""
+        elsif params[:sort] == "release_date"
+          @css_title = ""
+          @css_title_hilite = ""
+          @css_release_date = "bg-warning"
+          @css_release_date_hilite = "hilite"
+        else
+          @css_title = ""
+          @css_release_date = ""
+        end
+          
+        @movies = Movie.order(params[:sort]).all
+      else
+        @movies = Movie.all
+      end
     end
   
     def new
@@ -43,5 +63,6 @@ class MoviesController < ApplicationController
     # This helps make clear which methods respond to requests, and which ones do not.
     def movie_params
       params.require(:movie).permit(:title, :rating, :description, :release_date)
+      params.require(:cssclass)
     end
-  end
+end
