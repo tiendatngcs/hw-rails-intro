@@ -7,7 +7,30 @@ class MoviesController < ApplicationController
     end
   
     def index
-      Movie.order("title")
+      
+      @all_ratings = Movie.select("DISTINCT(rating)").order("rating").map{|entry| entry.rating}
+      @checked_dict = {}
+      @all_ratings.each do |rating| @checked_dict[rating]=true end
+      if params[:prev_checked_dict]
+        p "Prev_checked"
+        p params[:prev_checked_dict]
+        # @checked_dict = params[:prev_checked_dict]
+        @checked_dict = Hash[params[:prev_checked_dict].map { |k,v| [k, ActiveRecord::Type::Boolean.new.type_cast_from_user(v) ]}]
+      end
+      
+      if params["ratings"]
+        @checked_array = @all_ratings.map{|rating| params["ratings"][rating]}
+        @all_ratings.each do |rating|
+          p params["ratings"][rating]
+          if params["ratings"][rating]
+            @checked_dict[rating] = true
+          else
+            @checked_dict[rating] = false
+          end
+        end
+        
+      end
+      
       if params[:sort]
         if params[:sort] == "title"
           @css_title = "bg-warning"
@@ -28,6 +51,24 @@ class MoviesController < ApplicationController
       else
         @movies = Movie.all
       end
+      
+      p @all_ratings
+      p params["ratings"]
+      
+      
+      p @checked_dict
+      
+      @final_rating_array = []
+      
+      @all_ratings.each do |rating|
+        if @checked_dict[rating]
+          @final_rating_array.push(rating)
+        end
+      end
+      p @final_rating_array
+      
+      @movies = @movies.select{|entry| @final_rating_array.include?(entry.rating)}
+      
     end
   
     def new
