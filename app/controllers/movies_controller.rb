@@ -11,12 +11,12 @@ class MoviesController < ApplicationController
       @all_ratings = Movie.select("DISTINCT(rating)").order("rating").map{|entry| entry.rating}
       @checked_dict = {}
       @all_ratings.each do |rating| @checked_dict[rating]=true end
-      if params[:prev_checked_dict]
-        p "Prev_checked"
-        p params[:prev_checked_dict]
-        # @checked_dict = params[:prev_checked_dict]
-        @checked_dict = Hash[params[:prev_checked_dict].map { |k,v| [k, ActiveRecord::Type::Boolean.new.type_cast_from_user(v) ]}]
-      end
+      # if params[:prev_checked_dict]
+      #   p "Prev_checked"
+      #   p params[:prev_checked_dict]
+      #   # @checked_dict = params[:prev_checked_dict]
+      #   @checked_dict = Hash[params[:prev_checked_dict].map { |k,v| [k, ActiveRecord::Type::Boolean.new.type_cast_from_user(v) ]}]
+      # end
       
       if params["ratings"]
         @checked_array = @all_ratings.map{|rating| params["ratings"][rating]}
@@ -52,8 +52,6 @@ class MoviesController < ApplicationController
         @movies = Movie.all
       end
       
-      p @all_ratings
-      p params["ratings"]
       
       
       p @checked_dict
