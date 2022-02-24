@@ -10,7 +10,8 @@ class MoviesController < ApplicationController
       
       @all_ratings = Movie.select("DISTINCT(rating)").order("rating").map{|entry| entry.rating}
       @checked_dict = {}
-      @all_ratings.each do |rating| @checked_dict[rating]=true end
+      @sort_by = nil
+      
       # if params[:prev_checked_dict]
       #   p "Prev_checked"
       #   p params[:prev_checked_dict]
@@ -28,16 +29,32 @@ class MoviesController < ApplicationController
             @checked_dict[rating] = false
           end
         end
-        
+        session[:checked_dict] = @checked_dict
+      else
+        if session[:checked_dict]
+          @checked_dict = Hash[session[:checked_dict].map { |k,v| [k, ActiveRecord::Type::Boolean.new.type_cast_from_user(v) ]}]
+        else
+          @all_ratings.each do |rating| @checked_dict[rating]=true end
+        end
       end
       
       if params[:sort]
-        if params[:sort] == "title"
+        @sort_by = params[:sort]
+        session[:sort] = @sort_by
+      else
+        if session[:sort]
+          @sort_by = session[:sort]
+        end
+      end
+      
+      
+      if @sort_by
+        if @sort_by == "title"
           @css_title = "bg-warning"
           @css_title_hilite = "hilite"
           @css_release_date = ""
           @css_release_date_hilite = ""
-        elsif params[:sort] == "release_date"
+        elsif @sort_by == "release_date"
           @css_title = ""
           @css_title_hilite = ""
           @css_release_date = "bg-warning"
@@ -47,7 +64,7 @@ class MoviesController < ApplicationController
           @css_release_date = ""
         end
           
-        @movies = Movie.order(params[:sort]).all
+        @movies = Movie.order(@sort_by).all
       else
         @movies = Movie.all
       end
